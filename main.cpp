@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>   // NEW: allows file input/output
 using namespace std;
 
 const int MAX_STUDENTS = 100;
@@ -17,6 +18,29 @@ struct Student {
     int numCourses;
 };
 
+// ---------------- FILE SAVE FUNCTION ----------------
+void saveStudents(Student students[], int count) {   // NEW: function to save students
+    ofstream file("students.txt");                    // NEW: open file for writing
+
+    for (int i = 0; i < count; i++) {                 // NEW: loop through students
+        file << students[i].id << "|";                // NEW: save ID
+        file << students[i].name << "|";              // NEW: save name
+        file << students[i].numCourses;               // NEW: save number of courses
+
+        for (int j = 0; j < students[i].numCourses; j++) {   // NEW: loop courses
+            file << "|"                               // NEW: separator
+                 << students[i].courses[j].name      // NEW: course name
+                 << ","                               // NEW: separator
+                 << students[i].courses[j].grade;    // NEW: course grade
+        }
+
+        file << endl;                                 // NEW: new line per student
+    }
+
+    file.close();                                     // NEW: close file
+}
+
+// ---------------- GPA ----------------
 double calculateGPA(Student student) {
     if (student.numCourses == 0) return 0.0;
 
@@ -44,6 +68,7 @@ int findStudent(Student students[], int count, int id) {
     return -1;
 }
 
+// ---------------- ADD STUDENT ----------------
 void addStudent(Student students[], int &count) {
     if (count >= MAX_STUDENTS) {
         cout << "Cannot add more students!" << endl;
@@ -73,9 +98,12 @@ void addStudent(Student students[], int &count) {
     students[count] = newStudent;
     count++;
 
+    saveStudents(students, count);   // NEW: save after adding
+
     cout << "Student added successfully!" << endl;
 }
 
+// ---------------- UPDATE STUDENT ----------------
 void updateStudent(Student students[], int count) {
     int id;
     cout << "Enter student ID to update: ";
@@ -92,9 +120,12 @@ void updateStudent(Student students[], int count) {
     cin.ignore();
     getline(cin, students[index].name);
 
+    saveStudents(students, count);   // NEW: save after updating
+
     cout << "Name updated!" << endl;
 }
 
+// ---------------- REMOVE STUDENT ----------------
 void removeStudent(Student students[], int &count) {
     int id;
     cout << "Enter student ID to remove: ";
@@ -112,9 +143,13 @@ void removeStudent(Student students[], int &count) {
     }
 
     count--;
+
+    saveStudents(students, count);   // NEW: save after deleting
+
     cout << "Student removed!" << endl;
 }
 
+// ---------------- SEARCH ----------------
 void searchStudent(Student students[], int count) {
     int id;
     cout << "Enter student ID to search: ";
@@ -129,6 +164,7 @@ void searchStudent(Student students[], int count) {
     }
 }
 
+// ---------------- SORTING ----------------
 void sortById(Student students[], int count) {
     for (int i = 0; i < count - 1; i++) {
         for (int j = 0; j < count - i - 1; j++) {
@@ -155,6 +191,7 @@ void sortByName(Student students[], int count) {
     cout << "Sorted by name!" << endl;
 }
 
+// ---------------- LOW GPA ----------------
 void showLowGPA(Student students[], int count) {
     bool found = false;
 
@@ -173,6 +210,7 @@ void showLowGPA(Student students[], int count) {
     }
 }
 
+// ---------------- MAIN ----------------
 int main() {
     Student students[MAX_STUDENTS];
     int studentCount = 0;
@@ -207,4 +245,5 @@ int main() {
 
     return 0;
 }
+
 
